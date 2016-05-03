@@ -27,40 +27,56 @@ int main(int argc, char **argv) {
 
 
 	/*dekompozycja*/
+	int* per_process = new int[size];
 	if (rank == 0){
 		int from = 0;
 		int to = 0;
 		int array_size = 12;
+		int sum = 0;
 
 		int default_for_process = 12 / size;
 		int rest = 12 % size;
 		
-		int** per_proces = new int*[size]; /*ile od do którego */
+		int** from_to_proces = new int*[size]; /*ile od do którego */
+		
 	
-		int *numbers_pixels = new int[size]; /*iloœæ pikseli na proces*/
+		int *displs = new int[size]; /*przesuniecie*/
 			
 
 		for (int i = 0; i < size; i++){
-			per_proces[i] = new int[2];
+			from_to_proces[i] = new int[2];
 			from = to;
 			to = from + default_for_process;
 			if (i < rest){
 				to++;
 			}
-			per_proces[i][0] = from;
-			per_proces[i][1] = to;
-			numbers_pixels[i] = to - from;
+			from_to_proces[i][0] = from;
+			from_to_proces[i][1] = to;
+			per_process[i] = to - from;
+			displs[i] = sum;
+			sum += to - from;
 
 		}
-
 
 		for (int i = 0; i < size; i++){
-			cout << per_proces[i][0] << " " << per_proces[i][1] << " " << numbers_pixels[i] << endl;
+			cout << per_process[i] << endl;
 		}
-	}
-	else{
+
 
 	}
+	MPI_Bcast(&per_process, size, MPI_INT, 1, MPI_COMM_WORLD);
+
+	
+	
+	
+	if (rank == 3){
+	for (int i = 0; i < size; i++){
+		cout <<rank<<"proces    "<< per_process[i] << endl;
+
+	}
+	}
+		
+
 
 
 
