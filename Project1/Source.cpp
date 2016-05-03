@@ -12,80 +12,56 @@ int main(int argc, char **argv) {
 	char *BITMAP_SCR = "MARBLES.BMP";
 
 	MPI_Init(&argc, &argv);
+	int rank, size;
 
-	BMP Input;
-	Input.ReadFromFile(BITMAP_SCR);
-	int width = Input.TellWidth();
-	int height = Input.TellHeight();
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-	cout << width << endl;
-	cout << height << endl;
-
-	int pixec_count = width*height;
-
-	width = 4;
-	height = 3;
-
-	/*allokacja 3 elementowej tablicy*/
-	int ***old_bitmap = new int**[height];
-	for (int i = 0; i<height; i++){
-		old_bitmap[i] = new int*[width];
-		for (int j = 0; j<width; j++){
-			old_bitmap[i][j] = new int[3];
-			old_bitmap[i][j][0] = (int)Input(width, height)->Red;
-			old_bitmap[i][j][1] = (int)Input(width, height)->Green;
-			old_bitmap[i][j][2] = (int)Input(width, height)->Blue;
-			
-
-		}
-	}
-
-
-	cout << old_bitmap[66][2][0] << endl;
-	cout << old_bitmap[66][2][1] << endl;
-	cout << old_bitmap[66][2][2] << endl; 
-
-
-
-	/*int ***arr3D = new int**[height];
-	for (int i = 0; i<height; i++){
-		arr3D[i] = new int*[width];
-		for (int j = 0; j<width; j++){
-			arr3D[i][j] = new int[1];
-			for (int k = 0; k<1; k++){
-				arr3D[i][j][k] = 0;
-			}
-		}
-	}
-
-	for (int i = 0; i<height; i++){
-		for (int j = 0; j<width; j++){
-
-			cout << arr3D[i][j][0] << " ";
-			
-		}
-		cout << endl;
-	}*/
-
-
-
+	int probna[12] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11};
 	
 
-	/*int** old_bitmap = new int*[pixec_count];
-	for (int i = 0; i < pixec_count; ++i){
-		old_bitmap[i] = new int[3];
-		old_bitmap[i][0] = (int)Input(1419, 1001)->Red;
-		old_bitmap[i][0] = (int)Input(1419, 1001)->Red;
-		old_bitmap[i][0] = (int)Input(1419, 1001)->Red;
+	/*BMP Input;
+	Input.ReadFromFile(BITMAP_SCR);
+	int width = Input.TellWidth();
+	int height = Input.TellHeight();*/
 
+
+	/*dekompozycja*/
+	if (rank == 0){
+		int from = 0;
+		int to = 0;
+		int array_size = 12;
+
+		int default_for_process = 12 / size;
+		int rest = 12 % size;
 		
+		int** per_proces = new int*[size]; /*ile od do którego */
+	
+		int *numbers_pixels = new int[size]; /*iloœæ pikseli na proces*/
+			
+
+		for (int i = 0; i < size; i++){
+			per_proces[i] = new int[2];
+			from = to;
+			to = from + default_for_process;
+			if (i < rest){
+				to++;
+			}
+			per_proces[i][0] = from;
+			per_proces[i][1] = to;
+			numbers_pixels[i] = to - from;
+
+		}
+
+
+		for (int i = 0; i < size; i++){
+			cout << per_proces[i][0] << " " << per_proces[i][1] << " " << numbers_pixels[i] << endl;
+		}
+	}
+	else{
+
 	}
 
-	cout << "(" << (int)Input(1419, 1001)->Red << ","
-		<< (int)Input(1419, 1001)->Green << ","
-		<< (int)Input(1419, 1001)->Blue << ","
-		<< (int)Input(1419, 1001)->Alpha << ")" << endl;
-		*/
 
 
 
