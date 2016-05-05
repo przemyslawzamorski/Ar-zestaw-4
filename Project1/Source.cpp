@@ -21,11 +21,7 @@ int main(int argc, char **argv) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-	/*allokacja tablicy na ile na kazdy proces */
-	int* per_process = new int[size];
-
-
-
+	int* per_process = new int[size];/*allokacja tablicy na ile na kazdy proces */
 
 	/*tworzenie nowego typu zmiennych*/
 	int count = 4;
@@ -38,8 +34,8 @@ int main(int argc, char **argv) {
 	MPI_Type_commit(&barDatatype);
 
 
-	int pixel_count;
-	int arr_dimensions[2];
+	int pixel_count; /*liczba pikseli*/
+	int arr_dimensions[2]; /*wymiary bitmapy height x width*/
 	BMP Input;
 
 	int* displs = new int[size]; /* tablica przesuniecia */
@@ -47,31 +43,25 @@ int main(int argc, char **argv) {
 	if (rank == 0){
 		/*wczytanie na bitmapy i rozeslanie wymiarow */
 		char *BITMAP_SCR = "test.BMP";
-		
-
 		Input.ReadFromFile(BITMAP_SCR);
-		
-		int height = Input.TellHeight();
-		int width = Input.TellWidth();
 
-		arr_dimensions[0] = height;
-		arr_dimensions[1] = width;
+		arr_dimensions[0] = Input.TellHeight();
+		arr_dimensions[1] = Input.TellWidth();
 		MPI_Bcast(arr_dimensions, 2, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 	else{
 		MPI_Bcast(arr_dimensions, 2, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 
-	pixel_count = arr_dimensions[1] * arr_dimensions[0];
-		
 
-	Color* buffer = (Color*)malloc(sizeof(Color)*pixel_count);
+	pixel_count = arr_dimensions[1] * arr_dimensions[0];/*obliczanie liczby pixli*/
+		
+	Color* buffer = (Color*)malloc(sizeof(Color)*pixel_count);/*allokacja tablicy struktor na pixele */
 
 
 	if (rank == 0){
-		int counter = 0;
-
 		/*wczytanie bitmapy do tablicy struktor*/
+		int counter = 0;
 		for (int i = 0; i<arr_dimensions[0]; ++i)
 		{
 			for (int j = 0; j<arr_dimensions[1]; ++j)
@@ -100,20 +90,16 @@ int main(int argc, char **argv) {
 			displs[i] = sum;/*uzupelnienie przesuniecia */
 			sum += per_process[i];
 		}
-
-		/*rozeslanie po ile dla kazdego procesu */
+		/*rozeslanie po ile dla kazdego procesu oraz przesuniecie dla gathera*/
 		MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
 		MPI_Bcast(displs, size, MPI_INT, 0, MPI_COMM_WORLD);
-		cout << rank << " " << per_process[rank] << endl;
-
 
 	}
 	else{
 
-		/*rozeslanie po ile dla kazdego procesu */
+		/*pobranie po ile dla ka¿dego procesu   */
 		MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
 		cout << rank << " " << per_process[rank] << endl;
-		Color* buffer = (Color*)malloc(sizeof(Color)*10);
 		MPI_Bcast(displs, size, MPI_INT, 0, MPI_COMM_WORLD);
 
 
@@ -126,9 +112,12 @@ int main(int argc, char **argv) {
 	MPI_Scatterv(buffer, per_process, displs, barDatatype, pixel_per_process, per_process[rank], barDatatype, 0, MPI_COMM_WORLD);
 
 
+	
+	cout << "-----------------" << endl;
 	for(int i = 0; i < per_process[rank]; i++) {
 		cout << " Proces" << rank << " otrzymal " << pixel_per_process[i].r << " " << pixel_per_process[i].g << " " << pixel_per_process[i].b << " " << endl;
 	}
+	cout << "-----------------" << endl;
 	
 
 
