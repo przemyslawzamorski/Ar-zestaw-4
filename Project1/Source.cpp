@@ -9,12 +9,15 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
+	char *BITMAP_SCR = "MARBLES.BMP";
+
 	MPI_Init(&argc, &argv);
 	int rank, size;
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+	/*inicjalizacja procesu  ile na proces */
 	int* per_process = new int[size];
 
 	for (int i = 0; i < size; i++){
