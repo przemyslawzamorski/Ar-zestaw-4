@@ -78,7 +78,6 @@ int main(int argc, char **argv) {
 
 		int default_for_process = pixel_count / size; /*domyslnie na proces*/
 		int rest = pixel_count % size; /*reszta do podzielenia miedzy procesy*/
-		
 		int sum = 0; // suma zliczen. uzywana to obliczenia przesuniecia
 
 
@@ -101,25 +100,54 @@ int main(int argc, char **argv) {
 		MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
 		cout << rank << " " << per_process[rank] << endl;
 		MPI_Bcast(displs, size, MPI_INT, 0, MPI_COMM_WORLD);
-
-
 	}
 
 
 	/*stworzenie tablicy pikseli przydzielonych po podziale  */
 	Color* pixel_per_process = (Color*)malloc(sizeof(Color)*per_process[rank]);
-
+	/*podzial gatherem na procesy*/
 	MPI_Scatterv(buffer, per_process, displs, barDatatype, pixel_per_process, per_process[rank], barDatatype, 0, MPI_COMM_WORLD);
 
-
-	
+	/*wyswietlenie co ma ktory proces*/
 	cout << "-----------------" << endl;
 	for(int i = 0; i < per_process[rank]; i++) {
 		cout << " Proces" << rank << " otrzymal " << pixel_per_process[i].r << " " << pixel_per_process[i].g << " " << pixel_per_process[i].b << " " << endl;
 	}
 	cout << "-----------------" << endl;
+
+	/*obliczenie luminacji kazdego pixelu*/
+	int lumination_sum = 0;
+
+	for (int i = 0; i < per_process[rank]; i++) {
+
+		pixel_per_process[i].i = 0.299 * pixel_per_process[i].r + 0.587 *	pixel_per_process[i].g + 0.114 * pixel_per_process[i].b;
+		lumination_sum += pixel_per_process[i].i;
+	}
+	/*obliczenie sr luminacji i rozeslanie do procesow*/
+	int sr_lumination = 0;
+	MPI_Reduce(&lumination_sum, &sr_lumination, 1, MPI_INT, MPI_SUM, 0/*root*/, MPI_COMM_WORLD);
+	sr_lumination = sr_lumination / pixel_count;
+	MPI_Bcast(&sr_lumination, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+	/*zmienianie koloru*/
+	for (int i = 0; i < per_process[rank]; i++) {
+
+		if (pixel_per_process[i].i > sr_lumination){
+			pixel_per_process[i].r = 255;
+			pixel_per_process[i].g = 255;
+			pixel_per_process[i].b = 255;
+
+		}
+		else{
+			pixel_per_process[i].r = 0;
+			pixel_per_process[i].g = 0;
+			pixel_per_process[i].b = 0;
+		}
+	}
+
 	
 
+	
 
 
 
