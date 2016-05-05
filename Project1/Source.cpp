@@ -21,11 +21,12 @@ int main(int argc, char **argv) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-	/*allokacja ile na kazdy proces */
+	/*allokacja tablicy na ile na kazdy proces */
 	int* per_process = new int[size];
 
 
 	if (rank == 0){
+		/*wczytanie na bitmapy */
 		char *BITMAP_SCR = "test.BMP";
 		BMP Input;
 
@@ -52,13 +53,8 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		int from = 0;
-		int to = 0;
-
 		int default_for_process = pixel_count / size;
 		int rest = pixel_count % size;
-
-		
 
 		/*obliczenie ile na ka¿dy proces*/
 
@@ -74,10 +70,12 @@ int main(int argc, char **argv) {
 		
 	}
 
+	/*rozeslanie po ile dla kazdego procesu */
 	MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
-
-
 	cout << rank << " " << per_process[rank] << endl;
+
+	/*stworzenie tablicy pikseli przydzielonych po podziale  */
+	Color* pixel_per_process = (Color*)malloc(sizeof(Color)*per_process[rank]);
 	
 	
 
