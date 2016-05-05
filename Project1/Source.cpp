@@ -146,10 +146,29 @@ int main(int argc, char **argv) {
 	}
 
 	
+	/*zebranie wszystkich zamienionych*/
+
+	Color* buffer_recv = (Color*)malloc(sizeof(Color)*pixel_count);
+
+	MPI_Gatherv(pixel_per_process, per_process[rank], barDatatype, buffer_recv, per_process, displs, barDatatype,0, MPI_COMM_WORLD);
 
 	
 
+	/*deklaracja nowej bitmapy*/
+	BMP AnImage;
+	AnImage.SetSize(arr_dimensions[1], arr_dimensions[0]);
 
+
+	int checker = 0;
+	for (int i = 0; i < pixel_count; i++){
+		if ((i>0) && (i%arr_dimensions[1])){
+			checker++;
+		}
+		AnImage(i%arr_dimensions[1], checker)->Red = buffer_recv[i].r;
+		AnImage(i%arr_dimensions[1], checker)->Green = buffer_recv[i].g;
+		AnImage(i%arr_dimensions[1], checker)->Blue = buffer_recv[i].b;
+
+	}
 
 
 
