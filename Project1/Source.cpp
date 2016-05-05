@@ -25,6 +25,20 @@ int main(int argc, char **argv) {
 	int* per_process = new int[size];
 
 
+
+
+	/*tworzenie nowego typu zmiennych*/
+	int count = 4;
+	int lengths[4] = { 1, 1, 1, 1 };
+	MPI_Aint offsets[4] = { 0, sizeof(int), sizeof(int) + sizeof(int), sizeof(int) + sizeof(int) + sizeof(int) };
+	MPI_Datatype types[4] = { MPI_INT, MPI_INT, MPI_INT, MPI_INT };
+
+	MPI_Datatype barDatatype;
+	MPI_Type_struct(count, lengths, offsets, types, &barDatatype);
+	MPI_Type_commit(&barDatatype);
+
+
+
 	if (rank == 0){
 		/*wczytanie na bitmapy */
 		char *BITMAP_SCR = "test.BMP";
@@ -70,31 +84,34 @@ int main(int argc, char **argv) {
 			sum += per_process[i];
 		}
 
-		/*tworzenie nowego typu zmiennych*/
-		int count = 4;
-		int lengths[4] = { 1, 1, 1 , 1 };
-		MPI_Aint offsets[4] = { 0, sizeof(int), sizeof(int) + sizeof(int), sizeof(int) + sizeof(int)+ sizeof(int) };
-		MPI_Datatype types[4] = { MPI_INT, MPI_INT, MPI_INT, MPI_INT };
-
-		MPI_Datatype barDatatype;
-		MPI_Type_struct(count, lengths, offsets, types, &barDatatype);
-		MPI_Type_commit(&barDatatype);
+		/*rozeslanie po ile dla kazdego procesu */
+		MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
+		cout << rank << " " << per_process[rank] << endl;
 
 
+	}
+	else{
 
+		/*rozeslanie po ile dla kazdego procesu */
+		MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
+		cout << rank << " " << per_process[rank] << endl;
 
 
 	}
 
-	/*rozeslanie po ile dla kazdego procesu */
-	MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
-	cout << rank << " " << per_process[rank] << endl;
+	
+
+	
 
 	/*stworzenie tablicy pikseli przydzielonych po podziale  */
 	Color* pixel_per_process = (Color*)malloc(sizeof(Color)*per_process[rank]);
 
+	/*MPI_Scatterv(buffer, per_process, displs, barDatatype, pixel_per_process, per_process[rank], barDatatype, 0, MPI_COMM_WORLD);
 
-	
+
+	for(int i = 0; i < per_process[rank]; i++) {
+		cout << " Proces" << rank << " otrzymal " << pixel_per_process[i].r << " " << pixel_per_process[i].g << " " << pixel_per_process[i].b << " " << endl;
+	}*/
 	
 
 	
