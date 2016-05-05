@@ -21,6 +21,9 @@ int main(int argc, char **argv) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+	/*allokacja ile na kazdy proces */
+	int* per_process = new int[size];
+
 
 	if (rank == 0){
 		char *BITMAP_SCR = "test.BMP";
@@ -30,15 +33,13 @@ int main(int argc, char **argv) {
 		int width = Input.TellWidth();
 		int height = Input.TellHeight();
 
-		cout << width << endl;
-		cout << height << endl;
-
 		int pixel_count = width*height;
 
 		Color* buffer = (Color*)malloc(sizeof(Color)*pixel_count);
 
 		int counter = 0;
 
+		/*wczytanie bitmapy do tablicy struktor*/
 		for (int i = 0; i<height; ++i)
 		{
 			for (int j = 0; j<width; ++j)
@@ -51,17 +52,33 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		for (int i = 0; i < pixel_count; i++){
-				cout << i << "\n ";
-				cout << buffer[i].r << " ";
-				cout << buffer[i].g << " ";
-				cout << buffer[i].b << " ";
-				cout << buffer[i].i << "\n";
-				
+		int from = 0;
+		int to = 0;
+
+		int default_for_process = pixel_count / size;
+		int rest = pixel_count % size;
+
+		
+
+		/*obliczenie ile na ka¿dy proces*/
+
+		for (int i = 0; i < size; i++){
+
+			per_process[i] = default_for_process;
+			if (i < rest){
+				per_process[i]++;
+			}
+
 		}
-	
+
+		
 	}
 
+	MPI_Bcast(per_process, size, MPI_INT, 0, MPI_COMM_WORLD);
+
+
+	cout << rank << " " << per_process[rank] << endl;
+	
 	
 
 	
