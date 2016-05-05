@@ -40,6 +40,22 @@ int main(int argc, char **argv) {
 
 		cout << width << endl;
 		cout << height << endl;
+
+		int pixel_count = width*height;
+
+		/*allokacja 3 elementowej tablicy*/
+		int ***old_bitmap = new int**[height];
+		for (int i = 0; i<height; i++){
+			old_bitmap[i] = new int*[width];
+			for (int j = 0; j<width; j++){
+				old_bitmap[i][j] = new int[3];
+				old_bitmap[i][j][0] = (int)Input(width, height)->Red;
+				old_bitmap[i][j][1] = (int)Input(width, height)->Green;
+				old_bitmap[i][j][2] = (int)Input(width, height)->Blue;
+
+
+			}
+		}
 		
 
 		/*for (int i = 0; i < size; i++){
