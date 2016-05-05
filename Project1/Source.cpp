@@ -7,9 +7,13 @@
 
 using namespace std;
 
+struct Color
+{
+	int r, g, b;
+};
+
+
 int main(int argc, char **argv) {
-
-
 
 	MPI_Init(&argc, &argv);
 	int rank, size;
@@ -17,8 +21,8 @@ int main(int argc, char **argv) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+
 	if (rank == 0){
-		/*wczytanie pliku do tablicy i znalezienie get width and height */
 		char *BITMAP_SCR = "test.BMP";
 		BMP Input;
 
@@ -31,30 +35,40 @@ int main(int argc, char **argv) {
 
 		int pixel_count = width*height;
 
-		int ** ary = (int**)malloc(pixel_count * sizeof(int*));
-		for (int i = 0; i < pixel_count; ++i)
-			ary[i] = (int*)malloc(3 * sizeof(int));
+		Color* buffer = (Color*)malloc(sizeof(Color)*pixel_count);
 
+		int counter = 0;
 
-		// fill
-		for (int i = 0; i < pixel_count; ++i){
-				ary[i][1] = 5;
-				ary[i][0] = 5;
-				ary[i][2] = 5;
+		for (int i = 0; i<width; ++i)
+		{
+			for (int j = 0; j<height; ++j)
+			{
+				buffer[counter].r = 255;
+				buffer[counter].g = 0;
+				buffer[counter].b = 255;
+				counter++;
+			}
 		}
 
-		// print
-		for (int i = 0; i < pixel_count; ++i){
-			cout << endl;
-			for (int j = 0; j < 3; ++j)
-				cout << i << " " << j << " " << ary[i][j] << "\n";
-
+		counter = 0;
+		for (int i = 0; i<width; ++i)
+		{
+			for (int j = 0; j<height; ++j)
+			{
+				cout << buffer[counter].r << "\n";
+				cout << buffer[counter].g << "\n";
+				cout << buffer[counter].b << "\n";
+				counter++;
+			}
 		}
-		
-		
 
 
 	}
-		MPI_Finalize();
-		return 0;
-	}
+
+	
+
+	
+	MPI_Finalize();
+	return 0;
+
+}
