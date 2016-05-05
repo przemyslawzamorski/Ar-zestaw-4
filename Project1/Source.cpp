@@ -9,7 +9,7 @@ using namespace std;
 
 struct Color
 {
-	int r, g, b;
+	int r, g, b, i;
 };
 
 
@@ -39,30 +39,27 @@ int main(int argc, char **argv) {
 
 		int counter = 0;
 
-		for (int i = 0; i<width; ++i)
+		for (int i = 0; i<height; ++i)
 		{
-			for (int j = 0; j<height; ++j)
+			for (int j = 0; j<width; ++j)
 			{
-				buffer[counter].r = 255;
-				buffer[counter].g = 0;
-				buffer[counter].b = 255;
+				buffer[counter].r = Input(j, i)->Red;
+				buffer[counter].g = Input(j, i)->Green;
+				buffer[counter].b = Input(j, i)->Blue;
+				buffer[counter].i = 0;
 				counter++;
 			}
 		}
 
-		counter = 0;
-		for (int i = 0; i<width; ++i)
-		{
-			for (int j = 0; j<height; ++j)
-			{
-				cout << buffer[counter].r << "\n";
-				cout << buffer[counter].g << "\n";
-				cout << buffer[counter].b << "\n";
-				counter++;
-			}
+		for (int i = 0; i < pixel_count; i++){
+				cout << i << "\n ";
+				cout << buffer[i].r << " ";
+				cout << buffer[i].g << " ";
+				cout << buffer[i].b << " ";
+				cout << buffer[i].i << "\n";
+				
 		}
-
-
+	
 	}
 
 	
