@@ -10,7 +10,7 @@ using namespace std;
 struct Color
 {
 	int r, g, b, i;
-};
+} bar;
 
 
 int main(int argc, char **argv) {
@@ -69,6 +69,21 @@ int main(int argc, char **argv) {
 			displs[i] = sum;/*uzupelnienie przesuniecia */
 			sum += per_process[i];
 		}
+
+		/*tworzenie nowego typu zmiennych*/
+		int count = 4;
+		int lengths[4] = { 1, 1, 1 , 1 };
+		MPI_Aint offsets[4] = { 0, sizeof(int), sizeof(int) + sizeof(int), sizeof(int) + sizeof(int)+ sizeof(int) };
+		MPI_Datatype types[4] = { MPI_INT, MPI_INT, MPI_INT, MPI_INT };
+
+		MPI_Datatype barDatatype;
+		MPI_Type_struct(count, lengths, offsets, types, &barDatatype);
+		MPI_Type_commit(&barDatatype);
+
+
+
+
+
 	}
 
 	/*rozeslanie po ile dla kazdego procesu */
@@ -77,6 +92,8 @@ int main(int argc, char **argv) {
 
 	/*stworzenie tablicy pikseli przydzielonych po podziale  */
 	Color* pixel_per_process = (Color*)malloc(sizeof(Color)*per_process[rank]);
+
+
 	
 	
 
