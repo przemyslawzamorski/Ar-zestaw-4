@@ -43,19 +43,40 @@ int main(int argc, char **argv) {
 
 		int pixel_count = width*height;
 
-		/*allokacja 3 elementowej tablicy*/
-		int ***old_bitmap = new int**[height];
-		for (int i = 0; i<height; i++){
-			old_bitmap[i] = new int*[width];
-			for (int j = 0; j<width; j++){
-				old_bitmap[i][j] = new int[3];
-				old_bitmap[i][j][0] = (int)Input(width, height)->Red;
-				old_bitmap[i][j][1] = (int)Input(width, height)->Green;
-				old_bitmap[i][j][2] = (int)Input(width, height)->Blue;
+		/*counter = 0
+			dla height 
+				dla width
+				ary[counter][0]=rgb
+				ary[counter][1]= rgb
+				ary[counter][2]= rgb
+				przypisywanie do tablicy poprzez wskaünik 
+				
+				*/
+		// dynamic allocation
+		int** ary = new int*[pixel_count];
+		for (int i = 0; i < pixel_count; ++i)
+			ary[i] = new int[3];
 
 
-			}
+	
+
+
+
+		// fill
+		for (int i = 0; i < pixel_count; ++i)
+			for (int j = 0; j < 3; ++j)
+				ary[i][j] = 5;
+
+		// print
+		for (int i = 0; i < pixel_count; ++i){
+			cout << endl;
+			for (int j = 0; j < 3; ++j)
+				std::cout << i<<" "<<j<<" "<< ary[i][j] << "\n";
+
 		}
+		
+		
+
 		
 
 		/*for (int i = 0; i < size; i++){
