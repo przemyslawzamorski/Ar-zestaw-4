@@ -53,21 +53,26 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		int default_for_process = pixel_count / size;
-		int rest = pixel_count % size;
+		/*obliczenie ile na ka¿dy proces oraz przesuniecia */
 
-		/*obliczenie ile na ka¿dy proces*/
+		int default_for_process = pixel_count / size; /*domyslnie na proces*/
+		int rest = pixel_count % size; /*reszta do podzielenia miedzy procesy*/
+		int* displs = new int[size]; /* tablica przesuniecia */
+		int sum = 0; // suma zliczen. uzywana to obliczenia przesuniecia
+
 
 		for (int i = 0; i < size; i++){
-
 			per_process[i] = default_for_process;
 			if (i < rest){
 				per_process[i]++;
 			}
-
+			displs[i] = sum;/*uzupelnienie przesuniecia */
+			sum += per_process[i];
 		}
 
-		
+		for (int i = 0; i < size; i++){
+			cout << displs[i] << endl;
+		}
 	}
 
 	/*rozeslanie po ile dla kazdego procesu */
