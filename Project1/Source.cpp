@@ -69,10 +69,6 @@ int main(int argc, char **argv) {
 			displs[i] = sum;/*uzupelnienie przesuniecia */
 			sum += per_process[i];
 		}
-
-		for (int i = 0; i < size; i++){
-			cout << displs[i] << endl;
-		}
 	}
 
 	/*rozeslanie po ile dla kazdego procesu */
